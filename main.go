@@ -55,12 +55,12 @@ func (u StandardScorePlugin) FetchMetrics() (map[string]interface{}, error) {
 
 func (u StandardScorePlugin) GraphDefinition() map[string](mp.Graphs) {
 	return map[string](mp.Graphs) {
-		u.Prefix: mp.Graphs{
+		"standard_score" + u.MetricName: mp.Graphs{
 			Label: u.MetricName + " StandardScore",
 			Unit: "float",
 			Metrics: [](mp.Metrics) {
 				mp.Metrics{
-					Name: "standard_score",
+					Name: u.MetricName + " standard_score",
 					Label: "StandardScore",
 				},
 			},
