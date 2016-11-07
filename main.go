@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	optNodeName := flag.String("node", "", "Mackerel Node Name")
+	optNodeName := flag.String("node", "", "Mackerel Node Name (default: use hostname)")
 	optService := flag.String("service", "", "Service Name")
 	optRole := flag.String("role", "", "Role Name")
 	optMetricsName := flag.String("metric-name", "", "Metric Name")
@@ -19,7 +19,12 @@ func main() {
 
 	flag.Parse()
 
+	if *optNodeName == "" {
+		*optNodeName = getHostname()
+	}
+
 	var ss = StandardScorePlugin{
+		Prefix: "standard_score",
 		NodeName: *optNodeName,
 		Service: *optService,
 		MetricName: *optMetricsName,
@@ -54,13 +59,14 @@ func (u StandardScorePlugin) FetchMetrics() (map[string]interface{}, error) {
 }
 
 func (u StandardScorePlugin) GraphDefinition() map[string](mp.Graphs) {
+	labelPrefix := strings.Title(u.Prefix + "." + u.MetricName)
 	return map[string](mp.Graphs) {
-		"standard_score" + u.MetricName: mp.Graphs{
-			Label: u.MetricName + " StandardScore",
+		u.Prefix + "." + u.MetricName: mp.Graphs{
+			Label: labelPrefix,
 			Unit: "float",
 			Metrics: [](mp.Metrics) {
 				mp.Metrics{
-					Name: u.MetricName + " standard_score",
+					Name: "standard_score",
 					Label: "StandardScore",
 				},
 			},
@@ -172,4 +178,12 @@ func eachSlice(slice []*mkr.Host, size int) [][]*mkr.Host {
 
 	}
 	return chunks
+}
+
+func getHostname() string {
+	hostname, err := os.Hostname()
+	if err != nil {
+		fmt.Errorf("Failed to get hostname: ", err)
+	}
+	return hostname
 }
