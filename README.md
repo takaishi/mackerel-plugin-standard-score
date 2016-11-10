@@ -29,7 +29,7 @@ command = "MACKEREL_APIKEY='XXXX' /path/to/mackerel-plugin-standard-score -servi
 
 ## Licence
 
-[MIT](./LICENCE)
+[MIT](./LICENSE)
 
 ## Author
 
